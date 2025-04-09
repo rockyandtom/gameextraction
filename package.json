@@ -1,0 +1,24 @@
+{
+  "name": "game-iframe-checker",
+  "version": "1.0.0",
+  "description": "检查游戏链接并提取iframe地址及相关信息",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "game",
+    "iframe",
+    "checker",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "cheerio": "^1.0.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}

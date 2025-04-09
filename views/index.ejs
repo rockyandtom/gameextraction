@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>游戏iframe检查器</title>
+  <style>
+    body {
+      font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f7fa;
+    }
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-top: 0;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #409eff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #66b1ff;
+    }
+    .result {
+      margin-top: 30px;
+      border-top: 1px solid #ebeef5;
+      padding-top: 20px;
+    }
+    .error {
+      color: #f56c6c;
+      font-weight: 500;
+    }
+    .success {
+      color: #67c23a;
+    }
+    .markdown-result {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      border-left: 4px solid #409eff;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: monospace;
+    }
+    .copy-btn {
+      background-color: #67c23a;
+      margin-top: 10px;
+    }
+    .iframe-preview {
+      margin-top: 20px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      padding: 15px;
+    }
+    .iframe-container {
+      position: relative;
+      overflow: hidden;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    }
+    .iframe-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>游戏iframe检查器</h1>
+    
+    <form action="/check" method="POST">
+      <div class="form-group">
+        <label for="url">输入游戏链接：</label>
+        <input 
+          type="text" 
+          id="url" 
+          name="url" 
+          placeholder="https://example.com/game" 
+          value="<%= locals.url || '' %>"
+          required
+        >
+      </div>
+      <button type="submit">检查</button>
+    </form>
+    
+    <% if (locals.result) { %>
+      <div class="result">
+        <% if (result.error) { %>
+          <p class="error"><%= result.error %></p>
+        <% } else if (!result.hasIframe) { %>
+          <p class="error">结果: 无iframe地址</p>
+          <p><%= result.message %></p>
+        <% } else { %>
+          <p class="success">成功找到iframe!</p>
+          
+          <h3>Markdown结果:</h3>
+          <div class="markdown-result"><%= result.markdown %></div>
+          
+          <button class="copy-btn" onclick="copyToClipboard()">复制Markdown</button>
+          
+          <% if (result.iframeSources && result.iframeSources.length > 0) { %>
+            <h3>iframe预览 (第一个):</h3>
+            <div class="iframe-preview">
+              <div class="iframe-container">
+                <iframe src="<%= result.iframeSources[0] %>" allowfullscreen></iframe>
+              </div>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    function copyToClipboard() {
+      const markdown = document.querySelector('.markdown-result').textContent;
+      navigator.clipboard.writeText(markdown).then(() => {
+        alert('Markdown已复制到剪贴板');
+      }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动复制');
+      });
+    }
+  </script>
+</body>
+</html>
